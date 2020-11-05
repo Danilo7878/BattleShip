@@ -18,7 +18,7 @@ namespace BattleShip
             Barco[] barcos;
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("                BATTLESHIP");
+            Console.WriteLine("                      BATTLESHIP");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nLeyendo Archivo...");
             Console.ForegroundColor = ConsoleColor.Red;
@@ -186,13 +186,23 @@ namespace BattleShip
                     #region turnos
                     int turno = 0;
                     int turnos_fallidos = 0;
-                    string mensaje_salida = "";
+                    string mensaje_salida;
                     while (true)
                     {
                         turno++;
                         if (turnos_fallidos == 4)
                         {
                             mensaje_salida = "Se han fallado 4 turnos seguidos";
+                            break;
+                        }
+                        if (VerificarTableroLimpio(tablero))
+                        {
+                            mensaje_salida = "-------EL OPONENTE RESULTÓ GANADOR-------";
+                            break;
+                        }
+                        if (VerificarTableroLimpio(tablero_op_oculto))
+                        {
+                            mensaje_salida = "-------ERES EL GANADOR-------";
                             break;
                         }
                         Console.WriteLine("JUGADOR");
@@ -202,7 +212,30 @@ namespace BattleShip
                         Console.WriteLine("\nTurno: " + turno);
                         if (turno % 2 == 0)
                         {
-
+                            Random rdn = new Random();
+                            int x = rdn.Next(1, filas);
+                            int y = rdn.Next(1, columnas);
+                            Console.WriteLine("Turno del oponente, ha seleccionado coordenada: "+ x + "," + y);
+                            Console.WriteLine("<presione ENTER para continuar>");
+                            Console.ReadLine();
+                            //Console.Clear();
+                            if (tablero[x, y] == "  B  ")
+                            {
+                                tablero[x, y] = "  X  ";
+                                //Console.Clear
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.WriteLine("\n      ¡El Oponente acertó! :(");
+                            }
+                            else
+                            {
+                                if (tablero[x,y] == "  -  ")
+                                {
+                                    tablero[x, y] = "  0  ";
+                                }
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("\n      ¡Bien! El oponente ha fallado");
+                            }
+                            Console.ForegroundColor = ConsoleColor.White;
                         }
                         else {
                             Console.WriteLine("Su turno, ingrese coordenada: ");
@@ -230,19 +263,37 @@ namespace BattleShip
                                         tablero_op_mostrar[x, y] = "  X  ";
                                         //Console.Clear
                                         Console.ForegroundColor = ConsoleColor.Green;
-                                        Console.WriteLine("\n      ¡EXCELENTE!");
+                                        Console.WriteLine("\n           ¡EXCELENTE!");
                                     }
                                     else
                                     {
+                                        if (tablero_op_oculto[x, y] == "  -  ")
+                                        {
+                                            tablero_op_oculto[x, y] = "  0  ";
+                                            tablero_op_mostrar[x, y] = "  0  ";
+                                            turnos_fallidos = 0;
+                                        }
                                         Console.ForegroundColor = ConsoleColor.Magenta;
-                                        Console.WriteLine("\n      ¡MAL! Se ha desperdiciado un turno");
+                                        Console.WriteLine("\n  ¡MAL! Se ha desperdiciado un turno");
                                         turnos_fallidos++;
                                     }
+                                    Console.ForegroundColor = ConsoleColor.White;
                                 }
                             }
                         }
                     }
                     #endregion
+
+                    //Resultados
+                    //Console.Clear();
+                    Console.WriteLine("\nJuego Terminado, estos son los resultados:\n\nJUGADOR");
+                    ImprimirTablero(tablero);
+                    Console.WriteLine("\nOPONENTE");
+                    ImprimirTablero(tablero_op_oculto);
+                    Console.WriteLine("\nTotal de turnos: " + turno);
+                    Console.WriteLine("El jugador tuvo "+CalcularAciertos(tablero)+"/"+CalcularTotal(tablero));
+                    Console.WriteLine("El Oponente tuvo " + CalcularAciertos(tablero_op_oculto) + "/" + CalcularTotal(tablero_op_oculto));
+                    Console.WriteLine("\n"+mensaje_salida);
                 }
             }
             Console.ReadLine();
@@ -313,10 +364,67 @@ namespace BattleShip
             {
                 for (int j = 0; j < tablero.GetLength(1); j++)
                 {
+                    if (tablero[i, j] == "  X  ")
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                    }
+                    else if (tablero[i, j] == "  0  ")
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                    }
+                    else if (tablero[i, j] == "  B  ") 
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                    }
                     Console.Write(tablero[i, j]);
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
                 Console.Write("\n");
             }
         }
+        static bool VerificarTableroLimpio(string[,] tablero) {
+            bool limpio = true;
+            for (int i = 0; i < tablero.GetLength(0); i++)
+            {
+                for (int j = 0; j < tablero.GetLength(1); j++)
+                {
+                    if (tablero[i,j] == "  B  ")
+                    {
+                        limpio = false;
+                    }
+                }
+            }
+            return limpio;
+        }
+        static int CalcularTotal(string[,] tablero)
+        {
+            int total = 0;
+            for (int i = 0; i < tablero.GetLength(0); i++)
+            {
+                for (int j = 0; j < tablero.GetLength(1); j++)
+                {
+                    if (tablero[i, j] == "  B  " || tablero[i,j] == "  X  ")
+                    {
+                        total++;
+                    }
+                }
+            }
+            return total;
+        }
+        static int CalcularAciertos(string[,] tablero)
+        {
+            int total = 0;
+            for (int i = 0; i < tablero.GetLength(0); i++)
+            {
+                for (int j = 0; j < tablero.GetLength(1); j++)
+                {
+                    if (tablero[i, j] == "  X  ")
+                    {
+                        total++;
+                    }
+                }
+            }
+            return total;
+        } 
     }
 }
