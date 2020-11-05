@@ -291,8 +291,9 @@ namespace BattleShip
                     Console.WriteLine("\nOPONENTE");
                     ImprimirTablero(tablero_op_oculto);
                     Console.WriteLine("\nTotal de turnos: " + turno);
-                    Console.WriteLine("El jugador tuvo "+CalcularAciertos(tablero)+"/"+CalcularTotal(tablero));
-                    Console.WriteLine("El Oponente tuvo " + CalcularAciertos(tablero_op_oculto) + "/" + CalcularTotal(tablero_op_oculto));
+                    Console.WriteLine("El Jugador tuvo " + CalcularAciertos(tablero_op_oculto) + "/" + CalcularTotal(tablero_op_oculto));
+                    Console.WriteLine("El Oponente tuvo "+CalcularAciertos(tablero)+"/"+CalcularTotal(tablero));
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("\n"+mensaje_salida);
                 }
             }
